@@ -1,4 +1,4 @@
-# Explore Network of Letters 1.0.0
+# Explore Network of Letters 1.0.1
 
 The widget offers a link-triggered frontend-popover to show other letters that
 contain to the same network of letters. The data is acquired by accessing
