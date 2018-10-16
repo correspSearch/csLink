@@ -1,8 +1,8 @@
 {
-  "name": "cmif-creator",
+  "name": "csLink",
   "version": "1.0.0",
-  "description": "Creating a digital index of letters",
-  "author": "jomla <jonas.mueller-laackman@bbaw.de>",
+  "description": "Explore Networks of Letters",
+  "author": "Jonas Müller-Laackman <jonas.mueller-laackman@bbaw.de>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
