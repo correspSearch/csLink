@@ -249,6 +249,7 @@ export default {
         // If there are no names given as attributes, get the preferred Name from GND, only works with related authority files
         if (this[`correspondent${target}Name`] === '') this.setNames(target);
         // NOTE: FOR IE Support use XHR instead of fetch()
+        // console.info(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`);
         fetch(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`).then((response) => {
           response.json().then((js) => {
             const json = js;
@@ -383,7 +384,7 @@ export default {
               }
               // Case: Selection from Median
               if (this.selectionSpan.includes('median')) {
-                const median = Math.floor(json.teiHeader.profileDesc.correspDesc.length / 2);
+                const median = Math.floor(Object.keys(json.teiHeader.profileDesc.correspDesc).length / 2);
                 const results = [];
                 let i = 0;
                 let j = 0;
@@ -408,7 +409,7 @@ export default {
                       }
                     }
                     j = (median + step[1]);
-                    if (j <= json.teiHeader.profileDesc.correspDesc.length) {
+                    if (j <= Object.keys(json.teiHeader.profileDesc.correspDesc).length) {
                       if (exclude.includes(json.teiHeader.profileDesc.correspDesc[j].source)) {
                         step[1] += 1;
                       } else if (
@@ -424,8 +425,8 @@ export default {
                         step[1] += 1;
                       }
                     }
-                    if ((median + step[1] === json.teiHeader.profileDesc.correspDesc.length)
-                        && (median - 1 - step[0] === 0)) break;
+                    if ((median + step[1]) > Object.keys(json.teiHeader.profileDesc.correspDesc).length
+                        && (median - 1 - step[0]) < 0) break;
                   }
                   results.sort();
                 }
@@ -476,7 +477,7 @@ export default {
                 });
               }
             }
-            console.log(this.results);
+            // console.log(this.results);
           });
         });
       }
