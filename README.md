@@ -7,6 +7,8 @@ bootstrap standards.
 
 ## File structure
 
+All required files are found in the `dist`-folder.
+
     index.html
 contains the HTML code you have to include into your website
 to create the link 'Explore Network of Letters', which serves
