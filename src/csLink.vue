@@ -160,8 +160,9 @@ export default {
         const to = this.locale(new Date(Date.parse(date.to)));
         d = `zwischen ${from} und ${to}`;
       } else if (date.notBefore) {
-        d = this.locale(new Date(Date.parse(date.notBefore)));
-        d = `nicht vor ${d}`;
+        const notBefore = this.locale(new Date(Date.parse(date.notBefore)));
+        const notAfter = this.locale(new Date(Date.parse(date.notAfter)));
+        d = `nicht vor ${notBefore}, nicht nach ${notAfter}`;
       }
       return d;
     },
