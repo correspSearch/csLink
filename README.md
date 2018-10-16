@@ -1,10 +1,17 @@
 # csLink - Linking edited letters with correspSearch.
 v1.0.1
 
-The widget offers a link-triggered frontend-popover to show other letters that
-contain to the same network of letters. The data is acquired by accessing
-the correspSearch API. The widget shows the result as a plain list, styled after
-bootstrap standards.
+The widget _csLink_ provides users with the opportunity
+to not only explore a single letter of an online editon but also its interconnection
+with other letters from the same letter network.
+
+The widget can be included in an online edition to generate a link "Explore Network of Letters".
+Depending on the values of the `data-` attributes, an overlay will pop over on
+hovering the link and show a maximum of two other letters from the letter network.
+
+In addition, links are provided to a complete list of the search query on <http://www.correspSearch.net>.
+If a letter entry contains a valid URL reference, the search result will be linked
+to the letter in its respective online edition.
 
 ## File structure
 
