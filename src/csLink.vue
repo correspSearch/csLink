@@ -21,7 +21,7 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
   <div>
     <a href="#"
        id="exploreCorrespSearch"
-       v-bind:class="(results[0].length === 0 && results[1].length === 0) ? 'text-secondary disabled' : ''"
+       v-bind:class="(results[0].length === 0 && results[1].length === 0) ? 'disabled' : ''"
        v-on:mouseover="triggerPopover">Briefnetz erkunden <font-awesome-icon icon="share-alt" />
     </a>
 
@@ -489,15 +489,9 @@ export default {
 
 <style lang="scss">
 @import '../node_modules/bootstrap/scss/bootstrap-reboot.scss';
-/*
+
 .disabled {
-  cursor: not-allowed;
-  text-decoration: none;
-  /* If the link should not be shown in case of no results, uncomment below */
-  /* display: none;
+  display: none;
 }
-.disabled:hover {
-  text-decoration: none;
-}
-*/
+
 </style>
