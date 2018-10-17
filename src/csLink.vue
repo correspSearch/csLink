@@ -126,8 +126,16 @@ export default {
     },
 
     // Transform yyyy-mm-dd to dd.mm.yyyy
-    locale(date) {
-      return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    locale(date, format = 'YYYY-MM-DD') {
+      switch (format) {
+        case 'YYYY':
+          return date.toLocaleDateString('de-DE', { year: 'numeric' });
+        case 'YYYY-MM':
+          return date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+        case 'YYYY-MM-DD':
+        default:
+          return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
     },
 
     // Get preferred names from GND by using Lobid API
@@ -160,8 +168,14 @@ export default {
         const to = this.locale(new Date(Date.parse(date.to)));
         d = `zwischen ${from} und ${to}`;
       } else if (date.notBefore) {
-        const notBefore = this.locale(new Date(Date.parse(date.notBefore)));
-        const notAfter = this.locale(new Date(Date.parse(date.notAfter)));
+        let notBefore = '';
+        if (date.notBefore.length === 4) notBefore = this.locale(new Date(Date.parse(date.notBefore)), 'YYYY');
+        if (date.notBefore.length === 7) notBefore = this.locale(new Date(Date.parse(date.notBefore)), 'YYYY-MM');
+        if (date.notBefore.length === 10) notBefore = this.locale(new Date(Date.parse(date.notBefore)), 'YYYY-MM-DD');
+        let notAfter = '';
+        if (date.notAfter.length === 4) notAfter = this.locale(new Date(Date.parse(date.notAfter)), 'YYYY');
+        if (date.notAfter.length === 7) notAfter = this.locale(new Date(Date.parse(date.notAfter)), 'YYYY-MM');
+        if (date.notAfter.length === 10) notAfter = this.locale(new Date(Date.parse(date.notAfter)), 'YYYY-MM-DD');
         d = `nicht vor ${notBefore}, nicht nach ${notAfter}`;
       }
       return d;
@@ -250,10 +264,9 @@ export default {
         // If there are no names given as attributes, get the preferred Name from GND, only works with related authority files
         if (this[`correspondent${target}Name`] === '') this.setNames(target);
         // NOTE: FOR IE Support use XHR instead of fetch()
-        // console.info(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`);
+        console.info(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`);
         fetch(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`).then((response) => {
-          response.json().then((js) => {
-            const json = js;
+          response.json().then((json) => {
             if (json.teiHeader.profileDesc !== null) {
               // Calculate where result-fetching routine has to stop, in case of odd max result numbers, show more for the first correspondent
               let stopAt = this.resultMax / 2;
@@ -373,12 +386,29 @@ export default {
               }
               // Case: Selection from Median
               if (this.selectionSpan.includes('median')) {
+                let median = 0;
                 const length = (json.teiHeader.profileDesc.correspDesc.length === undefined) ? 0 : json.teiHeader.profileDesc.correspDesc.length;
-                const median = (length === undefined) ? 0 : Math.floor(length / 2);
+                if (Date.parse(start) < 0 && Date.parse(end) < 0) {
+                  let m = Math.abs(Date.parse(start) - Date.parse(end));
+                  m = Date.parse(start) + Math.floor(m / 2);
+                  for (let i = 0; i < length; i += 1) {
+                    const dateSource = json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date;
+                    let date = '';
+                    if (dateSource.when !== undefined) date = dateSource.when;
+                    if (dateSource.notBefore !== undefined) date = dateSource.notBefore;
+                    if (dateSource.from !== undefined) date = dateSource.from;
+                    date = Date.parse(date);
+                    if (date > m) {
+                      median = (i === 0) ? 0 : (i - 1);
+                      break;
+                    }
+                  }
+                }
+                // const median = (length === undefined) ? 0 : Math.floor(length / 2);
                 const results = [];
                 let i = 0;
                 let j = 0;
-                if (median === 0) {
+                if (median === 0 && (length === undefined)) {
                   if (!exclude.includes(json.teiHeader.profileDesc.correspDesc.source)) {
                     if (
                         !(this.retValDepType(json.teiHeader.profileDesc.correspDesc.correspAction[0].persName, 'ref') === this.correspondent1Id
@@ -400,16 +430,14 @@ export default {
                   }
                 } else {
                   if (this.selectionSpan === 'median-before-after') {
+                    console.warn(median);
+                    console.log(json.teiHeader.profileDesc.correspDesc);
                     const step = [0, 0];
                     while (
-                      (
-                        results.length < stopAt
-                      ) && (
-                        (median + step[1]) <= length
-                        && ((median - 1) - step[0]) >= 0
-                      )
+                        (median + step[1] + 1) <= length
+                        && ((median) - step[0]) >= 0
                     ) {
-                      i = ((median - 1) - step[0]);
+                      i = (median - step[0]);
                       if (i >= 0) {
                         if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
                           step[0] += 1;
@@ -426,7 +454,8 @@ export default {
                           step[0] += 1;
                         }
                       }
-                      j = (median + step[1]);
+                      if (results.length === stopAt) break;
+                      j = (median + step[1] + 1);
                       if (j <= length) {
                         if (exclude.includes(json.teiHeader.profileDesc.correspDesc[j].source)) {
                           step[1] += 1;
@@ -443,7 +472,9 @@ export default {
                           step[1] += 1;
                         }
                       }
+                      if (results.length === stopAt) break;
                     }
+                    console.warn(results);
                     results.sort();
                   }
                   if (this.selectionSpan === 'median-before') {
