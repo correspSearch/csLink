@@ -1,5 +1,4 @@
 # csLink - Linking edited letters with correspSearch.
-v1.0.1
 
 The widget _csLink_ provides users with the opportunity
 to not only explore a single letter of an online editon but also its interconnection
