@@ -81,15 +81,24 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
           <hr v-if="results[0].length > 0 || results[1].length > 0" />
           <small>Diese Verknüpfungen werden automatisiert bereitgestellt über <a href="http://www.correspsearch.net" target="_blank">correspSearch</a>.</small>
         </b-tab>
-        <b-tab title="Briefnetzwerk"
+        <b-tab title="Korrespondenten"
                class="pt-3">
-          <b-list-group>
-            <b-list-group-item v-for="item in network"
-                               v-bind:href="item[2]"
-                               target="_blank">
-              {{ item[0] }}
-            </b-list-group-item>
-          </b-list-group>
+          <ul class="persList">
+            <li v-for="item in network">
+              <a v-bind:href="item[2]"
+                 target="_blank"
+                 v-if="item[2] !== null">
+                {{ item[0] }}
+              </a>
+              <span v-if="item[2] === null">
+                {{ item[0] }}
+              </span>
+              <b-badge>{{ item[3] }}
+                <span v-if="item[3] > 1">Briefe</span>
+                <span v-if="item[3] === 1">Brief</span>
+              </b-badge>
+            </li>
+          </ul>
         </b-tab>
       </b-tabs>
     </b-popover>
@@ -292,11 +301,19 @@ export default {
                   [
                     this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, '#text'),
                     this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref'),
-                    `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&startdate=${start}&enddate=${end}`,
+                    (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('http://')
+                     || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('https://'))
+                     ? `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&startdate=${start}&enddate=${end}`
+                     : null,
+                    0,
                   ], [
                     this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, '#text'),
                     this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref'),
-                    `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&startdate=${start}&enddate=${end}`,
+                    (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('http://')
+                     || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('https://'))
+                     ? `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&startdate=${start}&enddate=${end}`
+                     : null,
+                    0,
                   ],
                 ];
                 correspondents.forEach((c) => {
@@ -310,6 +327,16 @@ export default {
                   if (!exists) this.network.push(c);
                 });
               }
+
+              for (let i = 0; i < json.teiHeader.profileDesc.correspDesc.length; i += 1) {
+                for (let j = 0; j < this.network.length; j += 1) {
+                  if (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.network[j][1]
+                      || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.network[j][1]) {
+                    this.network[j][3] += 1;
+                  }
+                }
+              }
+
               console.log(this.network);
               // Calculate where result-fetching routine has to stop, in case of odd max result numbers, show more for the first correspondent
               let stopAt = this.resultMax / 2;
@@ -577,9 +604,14 @@ export default {
 
 <style lang="scss">
 @import '../node_modules/bootstrap/scss/bootstrap-reboot.scss';
-
+.persList {
+  list-style-type: none;
+  padding-left: 10px;
+}
+.persList li {
+  margin-top: 5px;
+}
 .noLink {
   display: none !important;
 }
-
 </style>
