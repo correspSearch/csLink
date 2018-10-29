@@ -83,8 +83,13 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
         </b-tab>
         <b-tab title="Korrespondenten"
                class="pt-3">
-          <b-table small v-bind:fields="tableField" v-bind:items="network">
-            <template slot="name" slot-scope="data">
+          <b-table small
+            	     v-bind:fields="tableField"
+                   v-bind:items="network"
+                   sort-by="letters"
+                   sort-desc="desc">
+            <template slot="name"
+                      slot-scope="data">
               <a v-bind:href="data.value.url">{{ data.value.name }}</a>
             </template>
           </b-table>
