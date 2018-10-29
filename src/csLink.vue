@@ -337,7 +337,6 @@ export default {
                 }
               }
 
-              console.log(this.network);
               // Calculate where result-fetching routine has to stop, in case of odd max result numbers, show more for the first correspondent
               let stopAt = this.resultMax / 2;
               if (this.resultMax % 2 !== 0) {
@@ -499,8 +498,6 @@ export default {
                   }
                 } else {
                   if (this.selectionSpan === 'median-before-after') {
-                    console.warn(median);
-                    console.log(json.teiHeader.profileDesc.correspDesc);
                     const step = [0, 0];
                     while (
                         (median + step[1] + 1) <= length
@@ -543,7 +540,6 @@ export default {
                       }
                       if (results.length === stopAt) break;
                     }
-                    console.warn(results);
                     results.sort();
                   }
                   if (this.selectionSpan === 'median-before') {
@@ -593,7 +589,6 @@ export default {
                 });
               }
             }
-            console.log(this.results);
           });
         });
       }
