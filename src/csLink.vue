@@ -31,65 +31,67 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
                triggers="manual"
                ref="exploreCorrespSearchPopup"
                v-if="results[0].length !== 0 || results[1].length !== 0">
-      <b-card no-body>
-        <b-tabs card>
-          <b-tab title="Briefe" active>
-            <div v-if="results[0].length > 0">
-              <b-alert variant="danger"
-                       v-bind:show="this.correspondent1Id === ''">Keine Norm-ID für Sender angegeben.</b-alert>
-              <p v-if="this.correspondent1Id !== ''">Briefe von oder an <strong>{{ this.names[0] }}</strong> im selben Zeitraum in anderen Editionen:</p>
-              <b-list-group v-if="this.correspondent1Id !== ''">
-                <b-list-group-item v-for="(result, key) in results[0]"
-                                   v-bind:key="key">
-                <a v-bind:href="result.link"
-                   target="_blank"
-                   v-if="result.link !== null">
-                  <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
-                </a>
-                <div v-if="result.link === null">
-                  <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
-                </div>
-                </b-list-group-item>
-              </b-list-group>
-              <a v-bind:href="links[0]"
+      <b-tabs>
+        <b-tab title="Briefe"
+               class="pt-3"
+               active>
+          <div v-if="results[0].length > 0">
+            <b-alert variant="danger"
+                     v-bind:show="this.correspondent1Id === ''">Keine Norm-ID für Sender angegeben.</b-alert>
+            <p v-if="this.correspondent1Id !== ''">Briefe von oder an <strong>{{ this.names[0] }}</strong> im selben Zeitraum in anderen Editionen:</p>
+            <b-list-group v-if="this.correspondent1Id !== ''">
+              <b-list-group-item v-for="(result, key) in results[0]"
+                                 v-bind:key="key">
+              <a v-bind:href="result.link"
                  target="_blank"
-                 v-if="this.correspondent1Id !== ''">Alle Nachweise in correspSearch ansehen</a>
-            </div>
-            <hr v-if="results[0].length > 0 && results[1].length > 0" />
-            <div v-if="results[1].length > 0">
-              <b-alert variant="danger"
-                       v-bind:show="this.correspondent2Id === ''">Keine Norm-ID für Addressat angegeben.</b-alert>
-              <p v-if="this.correspondent2Id !== ''">Briefe von oder an <strong>{{ this.names[1] }}</strong> im selben Zeitraum in anderen Editionen:</p>
-              <b-list-group v-if="this.correspondent2Id !== ''">
-                <b-list-group-item v-for="(result, key) in results[1]"
-                                   v-bind:key="key">
-                <a v-bind:href="result.link"
-                   v-if="result.link !== null"
-                   target="_blank">
-                   <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
-                </a>
-                <div v-if="result.link === null">
-                  <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
-                </div>
-                </b-list-group-item>
-              </b-list-group>
-              <a v-bind:href="links[1]"
-                 target="_blank"
-                 v-if="this.correspondent2Id !== ''">Alle Nachweise in correspSearch ansehen</a>
-            </div>
-            <hr v-if="results[0].length > 0 || results[1].length > 0" />
-            <small>Diese Verknüpfungen werden automatisiert bereitgestellt über <a href="http://www.correspsearch.net" target="_blank">correspSearch</a>.</small>
-          </b-tab>
-          <b-tab title="Briefnetzwerk">
-            <ul>
-              <li v-for="item in network">
-                <a v-bind:href="item[2]"
-                   target="_blank">{{ item[0] }}</a>
-              </li>
-            </ul>
-          </b-tab>
-        </b-tabs>
-      </b-card>
+                 v-if="result.link !== null">
+                <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+              </a>
+              <div v-if="result.link === null">
+                <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+              </div>
+              </b-list-group-item>
+            </b-list-group>
+            <a v-bind:href="links[0]"
+               target="_blank"
+               v-if="this.correspondent1Id !== ''">Alle Nachweise in correspSearch ansehen</a>
+          </div>
+          <hr v-if="results[0].length > 0 && results[1].length > 0" />
+          <div v-if="results[1].length > 0">
+            <b-alert variant="danger"
+                     v-bind:show="this.correspondent2Id === ''">Keine Norm-ID für Addressat angegeben.</b-alert>
+            <p v-if="this.correspondent2Id !== ''">Briefe von oder an <strong>{{ this.names[1] }}</strong> im selben Zeitraum in anderen Editionen:</p>
+            <b-list-group v-if="this.correspondent2Id !== ''">
+              <b-list-group-item v-for="(result, key) in results[1]"
+                                 v-bind:key="key">
+              <a v-bind:href="result.link"
+                 v-if="result.link !== null"
+                 target="_blank">
+                 <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+              </a>
+              <div v-if="result.link === null">
+                <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+              </div>
+              </b-list-group-item>
+            </b-list-group>
+            <a v-bind:href="links[1]"
+               target="_blank"
+               v-if="this.correspondent2Id !== ''">Alle Nachweise in correspSearch ansehen</a>
+          </div>
+          <hr v-if="results[0].length > 0 || results[1].length > 0" />
+          <small>Diese Verknüpfungen werden automatisiert bereitgestellt über <a href="http://www.correspsearch.net" target="_blank">correspSearch</a>.</small>
+        </b-tab>
+        <b-tab title="Briefnetzwerk"
+               class="pt-3">
+          <b-list-group>
+            <b-list-group-item v-for="item in network"
+                               v-bind:href="item[2]"
+                               target="_blank">
+              {{ item[0] }}
+            </b-list-group-item>
+          </b-list-group>
+        </b-tab>
+      </b-tabs>
     </b-popover>
   </div>
 </template>
