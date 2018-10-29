@@ -87,7 +87,7 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
             	     v-bind:fields="tableField"
                    v-bind:items="network"
                    sort-by="letters"
-                   sort-desc="desc">
+                   v-bind:sort-desc="sortDesc">
             <template slot="name"
                       slot-scope="data">
               <a v-bind:href="data.value.url">{{ data.value.name }}</a>
@@ -141,6 +141,7 @@ export default {
         key: 'letters',
         label: 'Briefe',
       }],
+      sortDesc: true,
     };
   },
   methods: {
