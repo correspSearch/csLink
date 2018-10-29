@@ -27,16 +27,18 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import vueCustomElement from 'vue-custom-element';
 import Vue from 'vue';
-import { Popover, Alert, ListGroup } from 'bootstrap-vue/es/components';
+import { Popover, Alert, ListGroup, Tabs, Card } from 'bootstrap-vue/es/components';
 import csLink from './csLink';
 
 library.add(faShareAlt);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
-Vue.use(Popover);
-Vue.use(Alert);
-Vue.use(ListGroup);
-Vue.use(vueCustomElement);
+Vue.use(Popover)
+   .use(Alert)
+   .use(ListGroup)
+   .use(vueCustomElement)
+   .use(Tabs)
+   .use(Card);
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
