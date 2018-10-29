@@ -27,7 +27,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import vueCustomElement from 'vue-custom-element';
 import Vue from 'vue';
-import { Popover, Alert, ListGroup, Tabs, Card, Badge } from 'bootstrap-vue/es/components';
+import { Popover, Alert, ListGroup, Tabs, Card, Badge, Table } from 'bootstrap-vue/es/components';
 import csLink from './csLink';
 
 library.add(faShareAlt);
@@ -39,7 +39,8 @@ Vue.use(Popover)
    .use(vueCustomElement)
    .use(Tabs)
    .use(Card)
-   .use(Badge);
+   .use(Badge)
+   .use(Table);
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

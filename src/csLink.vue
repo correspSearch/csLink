@@ -83,22 +83,11 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
         </b-tab>
         <b-tab title="Korrespondenten"
                class="pt-3">
-          <ul class="persList">
-            <li v-for="item in network">
-              <a v-bind:href="item[2]"
-                 target="_blank"
-                 v-if="item[2] !== null">
-                {{ item[0] }}
-              </a>
-              <span v-if="item[2] === null">
-                {{ item[0] }}
-              </span>
-              <b-badge>{{ item[3] }}
-                <span v-if="item[3] > 1">Briefe</span>
-                <span v-if="item[3] === 1">Brief</span>
-              </b-badge>
-            </li>
-          </ul>
+          <b-table small v-bind:fields="tableField" v-bind:items="network">
+            <template slot="name" slot-scope="data">
+              <a v-bind:href="data.value.url">{{ data.value.name }}</a>
+            </template>
+          </b-table>
         </b-tab>
       </b-tabs>
     </b-popover>
@@ -140,6 +129,13 @@ export default {
 
       // List for Names
       network: [],
+      tableField: [{
+        key: 'name',
+        label: 'Name',
+      }, {
+        key: 'letters',
+        label: 'Briefe',
+      }],
     };
   },
   methods: {
@@ -296,30 +292,37 @@ export default {
         fetch(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`).then((response) => {
           response.json().then((json) => {
             if (json.teiHeader.profileDesc !== null) {
+              // Get a list of all involved correspondents
               for (let i = 0; i < json.teiHeader.profileDesc.correspDesc.length; i += 1) {
                 const correspondents = [
-                  [
-                    this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, '#text'),
-                    this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref'),
-                    (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('http://')
-                     || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('https://'))
-                     ? `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&startdate=${start}&enddate=${end}`
-                     : null,
-                    0,
-                  ], [
-                    this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, '#text'),
-                    this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref'),
-                    (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('http://')
-                     || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('https://'))
-                     ? `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&startdate=${start}&enddate=${end}`
-                     : null,
-                    0,
-                  ],
+                  {
+                    name: {
+                      name: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, '#text'),
+                      url: (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('http://')
+                       || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('https://'))
+                       ? `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&startdate=${start}&enddate=${end}`
+                       : null,
+                    },
+                    gnd: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref'),
+                    letters: 0,
+                  }, {
+                    name: {
+                      name: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, '#text'),
+                      url: (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('http://')
+                       || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('https://'))
+                       ? `https://correspsearch.net/search.xql?correspondent=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&startdate=${start}&enddate=${end}`
+                       : null,
+                    },
+                    gnd: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref'),
+                    letters: 0,
+                  },
                 ];
+
+                // Form an array of persons
                 correspondents.forEach((c) => {
                   let exists = false;
                   for (let j = 0; j < this.network.length; j += 1) {
-                    if (this.network[j][1] === c[1]) {
+                    if (this.network[j].gnd === c.gnd) {
                       exists = true;
                       break;
                     }
@@ -328,11 +331,12 @@ export default {
                 });
               }
 
+              // Evaluate the amount of correspondences
               for (let i = 0; i < json.teiHeader.profileDesc.correspDesc.length; i += 1) {
                 for (let j = 0; j < this.network.length; j += 1) {
-                  if (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.network[j][1]
-                      || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.network[j][1]) {
-                    this.network[j][3] += 1;
+                  if (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.network[j].gnd
+                      || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.network[j].gnd) {
+                    this.network[j].letters += 1;
                   }
                 }
               }
@@ -599,6 +603,8 @@ export default {
 
 <style lang="scss">
 @import '../node_modules/bootstrap/scss/bootstrap-reboot.scss';
+@import '../node_modules/bootstrap/scss/_tables.scss';
+@import '../node_modules/bootstrap/scss/_nav.scss';
 .persList {
   list-style-type: none;
   padding-left: 10px;
@@ -608,5 +614,9 @@ export default {
 }
 .noLink {
   display: none !important;
+}
+table {
+  margin-top: 10px;
+  font-size: 0.8rem;
 }
 </style>
