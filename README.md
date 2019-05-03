@@ -21,11 +21,11 @@ contains the HTML code you have to include into your website
 to create the link 'Explore Network of Letters', which serves
 as the trigger for the widget.
 
-    static/css/app.css
+    static/css/cslink.css
 contains the standard Bootstrap style information. Style can be customized
 based on the standard Bootstrap classes for popovers.
 
-    static/js/app.js
+    static/js/cslink.js
 contains the Application code. Do not change anything here.
 
 ## Setup the widget
