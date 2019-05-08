@@ -17,33 +17,30 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faShareAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-import vueCustomElement from 'vue-custom-element';
 import Vue from 'vue';
-import { Popover, Alert, ListGroup, Tabs, Table } from 'bootstrap-vue/es/components';
-import csLink from './csLink';
+import {
+  Popover, Alert, ListGroup, Tabs, Table,
+} from 'bootstrap-vue/es/components';
+import csLink from './csLink.vue';
 
 library.add(faShareAlt);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.use(Popover)
-   .use(Alert)
-   .use(ListGroup)
-   .use(vueCustomElement)
-   .use(Tabs)
-   .use(Table);
+  .use(Alert)
+  .use(ListGroup)
+  .use(Tabs)
+  .use(Table);
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({
-  props: ['role'],
   el: '#csLink',
   components: { csLink },
   render(createElement) {
