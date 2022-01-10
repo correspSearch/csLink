@@ -9,9 +9,6 @@ module.exports = {
   mode: 'development',
   devServer: {
     hot: true,
-    watchOptions: {
-      poll: true,
-    },
   },
   module: {
     rules: [

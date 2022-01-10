@@ -30,7 +30,15 @@ module.exports = {
         test: /\.css$/,
         use: [
           'vue-style-loader',
+          'css-loader'
+        ],
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
           'css-loader',
+          'sass-loader'
         ],
       },
     ],
@@ -43,10 +51,10 @@ module.exports = {
       template: 'index.html',
       inject: true,
     }),
-    new CopyWebpackPlugin([{
+    new CopyWebpackPlugin({ patterns: [{
       from: resolve('static'),
       to: resolve('dist/static/'),
       toType: 'dir',
-    }]),
+    }]}),
   ],
 };
