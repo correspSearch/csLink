@@ -57,7 +57,7 @@
     "eslint-import-resolver-webpack": "^0.13.2",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "jquery": "^3.6.0",
-    "tar": "^6.1.11",
+    "tar": "^6.1.9",
     "vue": "^2.6.14"
   }
 }
