@@ -1,0 +1,20 @@
+message: "If you use this software, please cite it using the metadata in the CFF file."
+authors:
+  - family-names: Müller-Laackman	
+    given-names: Jonas
+    orcid: "https://orcid.org/0000-0003-2279-6751"
+  - family-names: Dumont
+    given-names: Stefan
+    orcid: "https://orcid.org/0000-0002-6923-0950"
+title: csLink - Connect letters across digital scholarly editions 
+abstract: "The JavaScript widget csLink indicates chronologically neighbouring letters of the correspondence partners from other editions for an edited letter in a digital edition. "
+type: software
+date-released: "2022-01-10"
+version: 1.1.1
+repository-code: "https://github.com/correspSearch/csLink"
+license: "LGPL-3.0"
+url: "https://correspsearch.net/en/csLink.html"
+contact:
+  - email: correspSearch@bbaw.de
+    name: "correspSearch - Connecting Scholarly Editions of Correspondence"
+cff-version: 1.2.0
