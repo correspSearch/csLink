@@ -1,6 +1,6 @@
 message: "If you use this software, please cite it using the metadata in the CFF file."
 authors:
-  - family-names: Müller-Laackman	
+  - family-names: Müller-Laackman
     given-names: Jonas
     orcid: "https://orcid.org/0000-0003-2279-6751"
   - family-names: Dumont
