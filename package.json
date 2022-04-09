@@ -20,7 +20,7 @@
     "copy-webpack-plugin": "^10.2.0",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "node-sass": "^7.0.1",
     "popper.js": "^2.0.0-next.4",
     "sass-loader": "^12.4.0",
