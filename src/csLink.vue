@@ -88,8 +88,8 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
                    v-bind:items="network"
                    sort-by.sync="letters"
                    sort-desc.sync="sortDesc">
-            <template slot="name"
-                      slot-scope="data">
+            <template #cell(name)="data"
+                      >
               <a v-bind:href="data.value.url">{{ data.value.name }}</a>
             </template>
           </b-table>
@@ -235,8 +235,8 @@ export default {
         sender: this.retValDepType(source.correspAction[0].persName),
         addressee: this.retValDepType(source.correspAction[1].persName),
         place: this.retValDepType(source.correspAction[0].placeName),
-        date: this.getDate(source.correspAction[0].date),
-        link: (source.ref !== undefined && source.ref.includes('http://')) ? source.ref : null,
+        date: this.getDate(source.correspAction[0].date[0]),
+        link: (source.ref !== undefined) ? (source.ref.includes('http://') || source.ref.includes('https://')) ? source.ref : null : null,
       });
     },
   },
@@ -296,8 +296,8 @@ export default {
         // If there are no names given as attributes, get the preferred Name from GND, only works with related authority files
         if (this[`correspondent${target}Name`] === '') this.setNames(target);
         // NOTE: FOR IE Support use XHR instead of fetch()
-        console.info(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`);
-        fetch(`https://correspsearch.net/api/v1.1/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`).then((response) => {
+        console.info(`https://correspsearch.net/api/v1.2/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`);
+        fetch(`https://correspsearch.net/api/v1.2/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`).then((response) => {
           response.json().then((json) => {
             if (json.teiHeader.profileDesc !== null) {
               // Get a list of all involved correspondents
