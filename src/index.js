@@ -62,6 +62,7 @@ new Vue({
         selectionSpan: this.$el.attributes['data-selection-span'].value,
         resultMax: this.$el.attributes['data-result-max'].value,
         excludeEdition: this.$el.attributes['data-exclude-edition'].value,
+        language: this.$el.attributes['data-language'].value,
       },
     });
   },

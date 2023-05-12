@@ -22,7 +22,7 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
     <a href="#"
        id="exploreCorrespSearch"
        v-bind:class="(results[0].length === 0 && results[1].length === 0) ? 'noLink' : ''"
-       v-on:mouseover="triggerPopover">Briefnetz erkunden <font-awesome-icon icon="share-alt" />
+       v-on:mouseover="triggerPopover">{{labels.widgetTitle}} <font-awesome-icon icon="share-alt" />
     </a>
 
     <b-popover class="cslink"
@@ -32,58 +32,59 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
                ref="exploreCorrespSearchPopup"
                v-if="results[0].length !== 0 || results[1].length !== 0">
       <b-tabs>
-        <b-tab title="Briefe"
+        <b-tab v-bind:title="this.labels.letters"
                class="pt-3"
                active>
           <div v-if="results[0].length > 0">
             <b-alert variant="danger"
-                     v-bind:show="this.correspondent1Id === ''">Keine Norm-ID für Sender angegeben.</b-alert>
-            <p v-if="this.correspondent1Id !== ''">Briefe von oder an <strong>{{ this.names[0] }}</strong> im selben Zeitraum in anderen Editionen:</p>
+                     v-bind:show="this.correspondent1Id === ''">{{labels.noNormIDSender}}</b-alert>
+            <p v-if="this.correspondent1Id !== ''">{{labels.lettersFromTo}} <strong>{{this.names[0]}}</strong> {{labels.samePeriod}}</p>
             <b-list-group v-if="this.correspondent1Id !== ''">
               <b-list-group-item v-for="(result, key) in results[0]"
                                  v-bind:key="key">
               <a v-bind:href="result.link"
                  target="_blank"
                  v-if="result.link !== null">
-                <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+                <strong>{{ result.sender }}</strong> {{labels.to}} <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
               </a>
               <div v-if="result.link === null">
-                <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+                <strong>{{ result.sender }}</strong> {{labels.to}} <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
               </div>
               </b-list-group-item>
             </b-list-group>
             <a v-bind:href="links[0]"
                target="_blank"
-               v-if="this.correspondent1Id !== ''">Alle Nachweise in correspSearch ansehen</a>
+               v-if="this.correspondent1Id !== ''">{{labels.records}}</a>
           </div>
           <hr v-if="results[0].length > 0 && results[1].length > 0" />
           <div v-if="results[1].length > 0">
             <b-alert variant="danger"
-                     v-bind:show="this.correspondent2Id === ''">Keine Norm-ID für Addressat angegeben.</b-alert>
-            <p v-if="this.correspondent2Id !== ''">Briefe von oder an <strong>{{ this.names[1] }}</strong> im selben Zeitraum in anderen Editionen:</p>
+                     v-bind:show="this.correspondent2Id === ''">{{labels.noNormIDAddressee}}</b-alert>
+            <p v-if="this.correspondent2Id !== ''">{{labels.lettersFromTo}} <strong>{{ this.names[1] }}</strong> {{labels.samePeriod}}</p>
             <b-list-group v-if="this.correspondent2Id !== ''">
               <b-list-group-item v-for="(result, key) in results[1]"
                                  v-bind:key="key">
               <a v-bind:href="result.link"
                  v-if="result.link !== null"
                  target="_blank">
-                 <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+                 <strong>{{ result.sender }}</strong> {{labels.to}} <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
               </a>
               <div v-if="result.link === null">
-                <strong>{{ result.sender }}</strong> an <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
+                <strong>{{ result.sender }}</strong> {{labels.to}} <strong>{{ result.addressee }}</strong>{{ (result.place) ? ', ' + result.place : ''}}{{ (result.date) ? ', ' + result.date : '' }}
               </div>
               </b-list-group-item>
             </b-list-group>
             <a v-bind:href="links[1]"
                target="_blank"
-               v-if="this.correspondent2Id !== ''">Alle Nachweise in correspSearch ansehen</a>
+               v-if="this.correspondent2Id !== ''">{{labels.records}}</a>
           </div>
           <hr v-if="results[0].length > 0 || results[1].length > 0" />
-          <small>Diese Verknüpfungen werden automatisiert bereitgestellt über <a href="http://www.correspsearch.net" target="_blank">correspSearch</a>.</small>
+          <small>{{labels.linksProvidedBy}} <a href="http://www.correspsearch.net" target="_blank">correspSearch</a>.</small>
         </b-tab>
-        <b-tab title="Korrespondenten"
+        <b-tab v-bind:title="this.labels.correspondents"
                class="pt-3">
           <b-table small
+                   class="networkTable"
             	     v-bind:fields="tableField"
                    v-bind:items="network"
                    sort-by.sync="letters"
@@ -100,9 +101,11 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 </template>
 
 <script>
+import allLabels from '../static/labels.js';
 export default {
   // Props
   props: {
+    language: String,
     correspondent1Name: String,
     correspondent2Name: String,
     correspondent1Id: String,
@@ -131,6 +134,12 @@ export default {
 
       // Links that lead to a complete list of results at correspSearch
       links: [[], []],
+
+      // Labels for the widget
+      labels: {
+        letters: 'Briefe',
+        correspondents: 'Korrespondenten',
+      },
 
       // List for Names
       network: [],
@@ -198,7 +207,7 @@ export default {
       } else if (date.from) {
         const from = this.locale(new Date(Date.parse(date.from)));
         const to = this.locale(new Date(Date.parse(date.to)));
-        d = `zwischen ${from} und ${to}`;
+        d = `${this.labels.between} ${from} ${this.labels.and} ${to}`;
       } else if (date.notBefore) {
         let notBefore = '';
         if (date.notBefore.length === 4) notBefore = this.locale(new Date(Date.parse(date.notBefore)), 'YYYY');
@@ -208,7 +217,7 @@ export default {
         if (date.notAfter.length === 4) notAfter = this.locale(new Date(Date.parse(date.notAfter)), 'YYYY');
         if (date.notAfter.length === 7) notAfter = this.locale(new Date(Date.parse(date.notAfter)), 'YYYY-MM');
         if (date.notAfter.length === 10) notAfter = this.locale(new Date(Date.parse(date.notAfter)), 'YYYY-MM-DD');
-        d = `nicht vor ${notBefore}, nicht nach ${notAfter}`;
+        d = `${this.labels.notBefore} ${notBefore}, ${this.labels.notAfter} ${notAfter}`;
       }
       return d;
     },
@@ -219,30 +228,48 @@ export default {
         if (typeof source === 'object') {
           // Case 1: Entry is an ordinary object with #text property
           if (Array.isArray(source)) {
-            return source[0][key];
-          } return source[key];
+            return (key === 'ref') ? source[0][key].replace('https://', 'http://') : source[0][key];
+          } return (key === 'ref') ? source[key].replace('https://', 'http://') : source[key];
         } else if (typeof source === 'string') {
           // Case 2: Entry is a string for no other information but the name is available.
-          return source;
+          return (key === 'ref') ? source.replace('https://', 'http://') : source;
         // Case 3: Entry is an Array, meaning there are more than one persons. Only take the first in that case.
-        } return source[0][key];
+        } return (key === 'ref') ? source[0][key].replace('https://', 'http://') : source[0][key];
       } return '';
     },
 
     // Add to results
     addToResults(target, source) {
+      let ref = null;
+      if(source.ref !== undefined) {
+        ref = source.ref.replace('https://', 'http://');
+      }
       this.results[(target - 1)].push({
         sender: this.retValDepType(source.correspAction[0].persName),
         addressee: this.retValDepType(source.correspAction[1].persName),
         place: this.retValDepType(source.correspAction[0].placeName),
         date: this.getDate(source.correspAction[0].date[0]),
-        link: (source.ref !== undefined) ? (source.ref.includes('http://') || source.ref.includes('https://')) ? source.ref : null : null,
+        link: ref,
       });
     },
   },
 
   // Load first entries for occurrences in other letter editions
   created() {
+    // Get language for the labels from the prop
+    switch(this.language) {
+      case 'en': 
+        this.labels = allLabels.en;
+        break;
+      default:
+        this.labels = allLabels.de;
+        break;
+    }
+
+    // Set the heading for the letter-column
+    this.tableField[1].label = this.labels.letters;
+
+
     // Specify cmif to exclude
     const exclude = this.excludeEdition.replace(/ /g, '').split(',');
 
@@ -623,7 +650,7 @@ export default {
 .noLink {
   display: none !important;
 }
-table {
+.networkTable {
   margin-top: 10px;
   font-size: 0.8rem;
 }

@@ -107,6 +107,9 @@ Ending date for search (YYYY-MM-DD).
     data-exclude-edition
 `xml:id` of the edition to be excluded from search. Multiple ids divided by comma.
 
+    data-language
+Language of the widget. Can be `en` or `de`, if left blank, `de` is chosen as the default language.
+
 ## Copyright
 Developed by
 Jonas Müller-Laackman
