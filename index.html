@@ -24,7 +24,7 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 
 <body>
   <!-- Application -->
-  <div>
+  <div id="wrapper">
   <div id="csLink"
        data-language=""
        data-correspondent-1-name=""
@@ -37,8 +37,15 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
        data-selection-when="before-after"
        data-selection-span="median-before-after"
        data-result-max="4"
-       data-exclude-edition="#AVHR">
+       data-exclude-edition="">
 </div>
+  </div>
+<script>
+  const wrapper = document.getElementById('wrapper');
+  wrapper.addEventListener("results", function (e) {
+    console.log("Got Event! ", e.detail.results);
+  });
+</script>
   <!-- -->
   <!-- Application stylesheet -->
   <!-- The HTML hierarchy of the widget is structured as follows:
@@ -68,10 +75,13 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 
   -->
   <style>
+    #wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
     .popover {
       border-radius: 0px;
-    }
-    .list-goup {
     }
     .list-group-item {
       border-radius: 0px;

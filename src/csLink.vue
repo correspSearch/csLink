@@ -155,6 +155,21 @@ export default {
       sortDesc: true,
     };
   },
+  watch: {
+    results: function (val) {
+      if (val[0].length > 0 || val[1].length > 0) {
+        this.$el.dispatchEvent(new CustomEvent('results', {
+        bubbles: true,
+        detail: { results: true},
+        }));
+      } else {
+        this.$el.dispatchEvent(new CustomEvent('results', {
+        bubbles: true,
+        detail: { results: false},
+        }));
+      }
+    }
+  },
   methods: {
     // Trigger popover manually with a mouseleave event
     triggerPopover() {
