@@ -57,4 +57,8 @@ module.exports = {
       toType: 'dir',
     }]}),
   ],
+  output: {
+    filename: 'csLink.js',
+    clean: true,
+  }
 };

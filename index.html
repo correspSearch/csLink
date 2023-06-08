@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
@@ -24,8 +25,7 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 
 <body>
   <!-- Application -->
-  <div id="wrapper">
-  <div id="csLink"
+    <div id="csLink"
        data-language=""
        data-correspondent-1-name=""
        data-correspondent-1-id="http://d-nb.info/gnd/118554700"
@@ -37,15 +37,8 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
        data-selection-when="before-after"
        data-selection-span="median-before-after"
        data-result-max="4"
-       data-exclude-edition="">
-</div>
-  </div>
-<script>
-  const wrapper = document.getElementById('wrapper');
-  wrapper.addEventListener("results", function (e) {
-    console.log("Got Event! ", e.detail.results);
-  });
-</script>
+       data-exclude-edition="#AVHR">
+    </div>
   <!-- -->
   <!-- Application stylesheet -->
   <!-- The HTML hierarchy of the widget is structured as follows:
@@ -75,23 +68,6 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 
   -->
   <style>
-    #wrapper {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-    .popover {
-      border-radius: 0px;
-    }
-    .list-group-item {
-      border-radius: 0px;
-    }
-    .list-group-item:first-child, .list-group-item:last-child {
-      border-radius: 0;
-    }
-    .popover hr {
-      width: 50%;
-    }
   </style>
   <!-- -->
 </body>

@@ -21,28 +21,26 @@ contains the HTML code you have to include into your website
 to create the link 'Explore Network of Letters', which serves
 as the trigger for the widget.
 
-    static/css/cslink.css
-contains the standard Bootstrap style information. Style can be customized
-based on the standard Bootstrap classes for popovers.
+    static/cslink_labels.js
+contains the language-snippets needed for the different languages.
 
-    static/js/cslink.js
+    cslink.js
 contains the Application code. Do not change anything here.
 
 ## Setup the widget
 
-1. Copy `static/css/app.css` into your respective folder for style sheets.
-If you do not have such a folder, create a "css" folder in your root
-directory and paste the `app.css` into that folder.
-2. Create a link to that style sheet in the header of your HTML file.
-3. Copy `static/js/app.js` into your respective folder for JavaScript files.
-If you do not have such a folder, create a "js" folder in your root
-directory and paste the `app.js` into that folder.
-4. Copy the complete `<div>`-Tag of the widget to the place, where you want
+1. Copy `csLink.js` into your respective folder for JavaScript files.
+If you do not have such a folder, create a "js" folder in your root directory
+and paste the `csLink.js` into that folder.
+2. Copy the `static`-folder with `csLink_labels.js` into your root directory, if you don't already
+ have a folder with that name.
+3. Copy the complete `<div id=csLink>`-Tag of the widget to the place, where you want
 the link to appear.
-5. Copy the `<script>`-Tag and paste it _below_ the `<div>` you pasted in Step 4.
-Change the path according to the location of the JavaScript file, you copied in Step 3.
-6. Change the values of the data attributes in the widget's `<div>` according
+4. Copy the `<script>`-Tag and paste it _below_ the `<div>` you pasted in Step 2.
+Change the path according to the location of the JavaScript file, you copied in Step 1.
+5. Change the values of the data attributes in the widget's `<div>` according
 to your needs.
+
 
 ## Setup the attributes
 _Do not change the `id` attribute for the widget to work!_
@@ -109,6 +107,19 @@ Ending date for search (YYYY-MM-DD).
 
     data-language
 Language of the widget. Can be `en` or `de`, if left blank, `de` is chosen as the default language.
+
+### Register a callback function
+
+The widget fires an event `resultsExist`, to which it is possible to register a callback function. 
+`resultsExist` fires once on initialization and then whenever changes in the results-property are detected. 
+`e.details.results`, contains a boolean that returns `false`, if no results have been found, and `true`, if results are available.
+To listen for that event, you can for example wrap the widget in a `<div id="wrapper">` and add an `eventListener`:
+```js
+    const wrapper = document.getElementById('wrapper');
+    wrapper.addEventListener("resultsExist", function (e) {
+        console.log("Got results? ", e.detail.results);
+    });
+```
 
 ## Copyright
 Developed by

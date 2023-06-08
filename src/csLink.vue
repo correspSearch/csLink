@@ -101,7 +101,7 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
 </template>
 
 <script>
-import allLabels from '../static/labels.js';
+import allLabels from '../static/csLink_labels.js';
 export default {
   // Props
   props: {
@@ -157,17 +157,7 @@ export default {
   },
   watch: {
     results: function (val) {
-      if (val[0].length > 0 || val[1].length > 0) {
-        this.$el.dispatchEvent(new CustomEvent('results', {
-        bubbles: true,
-        detail: { results: true},
-        }));
-      } else {
-        this.$el.dispatchEvent(new CustomEvent('results', {
-        bubbles: true,
-        detail: { results: false},
-        }));
-      }
+      this.checkResultsAndSendEvent(val);
     }
   },
   methods: {
@@ -267,11 +257,32 @@ export default {
         link: ref,
       });
     },
-  },
+    // Check if the given results-array contains results and fire an event, containing a boolean, depending on the outcome
+    checkResultsAndSendEvent(results) {
+      if(results !== undefined){
+        if (results[0].length > 0 || results[1].length > 0) {
+          this.$el.dispatchEvent(new CustomEvent('resultsExist', {
+          bubbles: true,
+          detail: { results: true},
+          }));
+        } else {
+          this.$el.dispatchEvent(new CustomEvent('resultsExist', {
+          bubbles: true,
+          detail: { results: false},
+          }));
+        }
+      } else {
+        this.$el.dispatchEvent(new CustomEvent('resultsExist', {
+          bubbles: true,
+          detail: { results: false},
+          }));
+      }      
+    },
 
+  },
   // Load first entries for occurrences in other letter editions
-  created() {
-    // Get language for the labels from the prop
+  mounted() {
+  // Get language for the labels from the prop
     switch(this.language) {
       case 'en': 
         this.labels = allLabels.en;
@@ -647,8 +658,11 @@ export default {
         });
       }
     });
-  },
+  // Check results initially
+  this.checkResultsAndSendEvent(this.results);
+}
 };
+
 </script>
 
 <style lang="scss">
