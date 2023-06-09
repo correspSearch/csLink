@@ -36,8 +36,8 @@ and paste the `csLink.js` into that folder.
  have a folder with that name.
 3. Copy the complete `<div id=csLink>`-Tag of the widget to the place, where you want
 the link to appear.
-4. Copy the `<script>`-Tag and paste it _below_ the `<div>` you pasted in Step 2.
-Change the path according to the location of the JavaScript file, you copied in Step 1.
+4. Copy the `<script>`-Tag and paste it _below_ the `<div>` you pasted in Step 3.
+Change the path according to the location of the JavaScript file (`csLink.js`), you copied in Step 1.
 5. Change the values of the data attributes in the widget's `<div>` according
 to your needs.
 
@@ -55,7 +55,7 @@ is obsolete.
 
     data-range
 Range of days that are included in the search. Depending on the value of data-selection-when,
-the range is either added after, before or after and before a date, or after and before a timespan.
+the range is either added after, before, after and before a date, or after and before a timespan.
 
     date-selection-when
 Determines, when the range shall be added to the given date. Possible values:
@@ -103,7 +103,7 @@ If left blank and the Authority file URI does not link to GND, no name will be s
 Ending date for search (YYYY-MM-DD).
 
     data-exclude-edition
-`xml:id` of the edition to be excluded from search. Multiple ids divided by comma.
+`xml:id` of the edition to be excluded from search. Multiple ids separated by comma.
 
     data-language
 Language of the widget. Can be `en` or `de`, if left blank, `de` is chosen as the default language.
@@ -111,7 +111,7 @@ Language of the widget. Can be `en` or `de`, if left blank, `de` is chosen as th
 ### Register a callback function
 
 The widget fires an event `resultsExist`, to which it is possible to register a callback function. 
-`resultsExist` fires once on initialization and then whenever changes in the results-property are detected. 
+`resultsExist` fires once on initialization and then whenever changes are detected in the results-property. 
 `e.details.results`, contains a boolean that returns `false`, if no results have been found, and `true`, if results are available.
 To listen for that event, you can for example wrap the widget in a `<div id="wrapper">` and add an `eventListener`:
 ```js
