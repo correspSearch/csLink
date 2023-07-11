@@ -29,15 +29,16 @@ contains the Application code. Do not change anything here.
 
 ## Setup the widget
 
-1. Copy `csLink.js` into your respective folder for JavaScript files.
+1. Copy `css/cslink.css` into your respective folder for style sheets.
+If you do not have such a folder, create a "css" folder in your root
+directory and paste the `cslink.css` into that folder.
+2. Copy `csLink.js` into your respective folder for JavaScript files.
 If you do not have such a folder, create a "js" folder in your root directory
 and paste the `csLink.js` into that folder.
-2. Copy the `static`-folder with `csLink_labels.js` into your root directory, if you don't already
- have a folder with that name.
 3. Copy the complete `<div id=csLink>`-Tag of the widget to the place, where you want
 the link to appear.
 4. Copy the `<script>`-Tag and paste it _below_ the `<div>` you pasted in Step 3.
-Change the path according to the location of the JavaScript file (`csLink.js`), you copied in Step 1.
+Change the path according to the location of the JavaScript file (`csLink.js`), you copied in Step 2.
 5. Change the values of the data attributes in the widget's `<div>` according
 to your needs.
 

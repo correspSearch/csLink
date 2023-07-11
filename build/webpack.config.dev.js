@@ -9,6 +9,7 @@ module.exports = {
   mode: 'development',
   devServer: {
     hot: true,
+    port: 8080,
   },
   module: {
     rules: [
