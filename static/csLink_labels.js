@@ -14,6 +14,7 @@ const labels = {
         and: 'und',
         letters: 'Briefe',
         correspondents: 'Korrespondenten',
+        noDate: 'kein Datum vorhanden',
 
     },
     en: {
@@ -31,6 +32,7 @@ const labels = {
         and: 'and',
         letters: 'Letters',
         correspondents: 'Correspondents',
+        noDate: 'no date available',
     }
 }
 

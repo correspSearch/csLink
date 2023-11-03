@@ -206,6 +206,7 @@ export default {
 
     // Transform Date
     getDate(date) {
+      if (date) {
       let d = '';
       if (date.when) {
         d = this.locale(new Date(Date.parse(date.when)));
@@ -225,6 +226,7 @@ export default {
         d = `${this.labels.notBefore} ${notBefore}, ${this.labels.notAfter} ${notAfter}`;
       }
       return d;
+    } else return this.labels.noDate;
     },
 
     // Return Value depending on the type of the source
@@ -526,7 +528,8 @@ export default {
                   let m = Math.abs(Date.parse(start) - Date.parse(end));
                   m = Date.parse(start) + Math.floor(m / 2);
                   for (let i = 0; i < length; i += 1) {
-                    const dateSource = json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date;
+                    if (json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date.length) {
+                    const dateSource = json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date[0];
                     let date = '';
                     if (dateSource.when !== undefined) date = dateSource.when;
                     if (dateSource.notBefore !== undefined) date = dateSource.notBefore;
@@ -535,6 +538,7 @@ export default {
                     if (date > m) {
                       median = (i === 0) ? 0 : (i - 1);
                       break;
+                    }
                     }
                   }
                 }
