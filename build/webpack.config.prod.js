@@ -58,7 +58,6 @@ module.exports = {
     }]}),
   ],
   output: {
-    filename: 'csLink.js',
-    clean: true,
+    filename: 'csLink.js'
   }
 };

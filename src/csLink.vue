@@ -349,8 +349,8 @@ export default {
         // If there are no names given as attributes, get the preferred Name from GND, only works with related authority files
         if (this[`correspondent${target}Name`] === '') this.setNames(target);
         // NOTE: FOR IE Support use XHR instead of fetch()
-        console.info(`https://correspsearch.net/api/v1.2/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`);
-        fetch(`https://correspsearch.net/api/v1.2/tei-json.xql?correspondent=${this[`correspondent${target}Id`]}&startdate=${start}&enddate=${end}`).then((response) => {
+        console.info(`https://correspsearch.net/api/v2.0/tei-json.xql?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`);
+        fetch(`https://correspsearch.net/api/v2.0/tei-json.xql?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`).then((response) => {
           response.json().then((json) => {
             if (json.teiHeader.profileDesc !== null) {
               // Get a list of all involved correspondents
@@ -361,7 +361,7 @@ export default {
                       name: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, '#text'),
                       url: (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('http://')
                        || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('https://'))
-                       ? `https://correspsearch.net/de/search.html?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&d=${start} - ${end}&lang=${(this.language === 'en') ? 'en' : 'de'}`
+                       ? `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&d=${start}-${end}`
                        : null,
                     },
                     gnd: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref'),
@@ -371,7 +371,7 @@ export default {
                       name: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, '#text'),
                       url: (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('http://')
                        || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('https://'))
-                       ? `https://correspsearch.net/de/search.html?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&d=${start} - ${end}&lang=${(this.language === 'en') ? 'en' : 'de'}`
+                       ? `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&d=${start}-${end}`
                        : null,
                     },
                     gnd: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref'),
@@ -432,7 +432,7 @@ export default {
                       }
                     }
                   } else if (i < stopAt) stopAt += 1;
-                  this.links[(target - 1)] = `https://correspsearch.net/de/suche.html?s=${this[`correspondent${target}Id`]}&d=${start} - ${end}&lang=${(this.language === 'en') ? 'en' : 'de'}`;
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
                 }
               }
               // Case: Selection from the end of the timespan
@@ -458,7 +458,7 @@ export default {
                       }
                     }
                   } else if (i >= stopAt) stopAt -= 1;
-                  this.links[(target - 1)] = `https://correspsearch.net/de/suche.html?s=${this[`correspondent${target}Id`]}&d=${start} - ${end}&lang=${(this.language === 'en') ? 'en' : 'de'}`;
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
                 }
               }
               // Case: Random selection
@@ -515,7 +515,7 @@ export default {
                   if (sort.includes(i)) {
                     this.addToResults(target, json.teiHeader.profileDesc.correspDesc[i]);
                   }
-                  this.links[(target - 1)] = `https://correspsearch.net/de/suche.html?s=${this[`correspondent${target}Id`]}&d=${start} - ${end}&lang=${(this.language === 'en') ? 'en' : 'de'}`;
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
                 }
               }
               // Case: Selection from Median
@@ -587,7 +587,7 @@ export default {
                       }
                       if (results.length === stopAt) break;
                       j = (median + step[1] + 1);
-                      if (j <= length) {
+                      if (j < length) {
                         if (exclude.includes(json.teiHeader.profileDesc.correspDesc[j].source)) {
                           step[1] += 1;
                         } else if (
@@ -650,7 +650,7 @@ export default {
                   if (!exclude.includes(json.teiHeader.profileDesc.correspDesc[e].source)) {
                     this.addToResults(target, json.teiHeader.profileDesc.correspDesc[e]);
                   }
-                  this.links[(target - 1)] = `https://correspsearch.net/de/suche.html?s=${this[`correspondent${target}Id`]}&d=${start} - ${end}&lang=${(this.language === 'en') ? 'en' : 'de'}`;
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
                 });
               }
             }
