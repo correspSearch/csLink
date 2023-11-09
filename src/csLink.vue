@@ -521,12 +521,13 @@ export default {
                 }
               }
               // Case: Selection from Median
-              if (this.selectionSpan.includes('median')) {
+              if (this.selectionSpan.includes('median') || this.selectionSpan === '') {
                 let median = 0;
                 const length = (json.teiHeader.profileDesc.correspDesc.length === undefined) ? 0 : json.teiHeader.profileDesc.correspDesc.length;
                 if (Date.parse(start) < 0 && Date.parse(end) < 0) {
                   let m = Math.abs(Date.parse(start) - Date.parse(end));
                   m = Date.parse(start) + Math.floor(m / 2);
+                  let exactDate = 0;
                   for (let i = 0; i < length; i += 1) {
                     if (json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date.length) {
                     const dateSource = json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date[0];
@@ -534,9 +535,10 @@ export default {
                     if (dateSource.when !== undefined) date = dateSource.when;
                     if (dateSource.notBefore !== undefined) date = dateSource.notBefore;
                     if (dateSource.from !== undefined) date = dateSource.from;
-                    date = Date.parse(date);
-                    if (date > m) {
-                      median = (i === 0) ? 0 : (i - 1);
+                    if (new Date(date).getTime() === new Date(m).getTime()) {
+                      exactDate += 1;
+                    } else if (new Date(date) > new Date(m)) {
+                      median = (i === 0) ? 0 : (i - 1 - Math.floor(exactDate / 2));
                       break;
                     }
                     }
@@ -566,45 +568,53 @@ export default {
                     }
                   }
                 } else {
-                  if (this.selectionSpan === 'median-before-after') {
+                  if (this.selectionSpan === 'median-before-after' || this.selectionSpan === '') {
                     const step = [0, 0];
+                    let iResults = 0;
+                    let jResults = 0;
                     while (
                         (median + step[1] + 1) <= length
                         && ((median) - step[0]) >= 0
                     ) {
                       i = (median - step[0]);
                       if (i >= 0) {
-                        if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
-                          step[0] += 1;
-                        } else if (
-                          (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
-                        ) || (
-                          this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
-                        ) {
-                          step[0] += 1;
-                        } else {
-                          results.push(i);
-                          step[0] += 1;
+                        if ((iResults <= jResults && stopAt/2 > iResults) || j >= length){
+                          if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
+                            step[0] += 1;
+                          } else if (
+                            (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
+                          ) || (
+                            this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
+                          ) {
+                            step[0] += 1;
+                          } else {
+                            results.push(i);
+                            step[0] += 1;
+                            iResults += 1;
+                          }
                         }
                       }
                       if (results.length === stopAt) break;
                       j = (median + step[1] + 1);
                       if (j < length) {
-                        if (exclude.includes(json.teiHeader.profileDesc.correspDesc[j].source)) {
-                          step[1] += 1;
-                        } else if (
-                          (this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[0].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[1].persName, 'ref') === this.correspondent2Id
-                        ) || (
-                          this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[1].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[0].persName, 'ref') === this.correspondent2Id)
-                        ) {
-                          step[1] += 1;
-                        } else {
-                          results.push(j);
-                          step[1] += 1;
+                        if ((jResults <= iResults && stopAt/2 > jResults) || i < 0) {
+                          if (exclude.includes(json.teiHeader.profileDesc.correspDesc[j].source)) {
+                            step[1] += 1;
+                          } else if (
+                            (this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[0].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[1].persName, 'ref') === this.correspondent2Id
+                          ) || (
+                            this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[1].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[j].correspAction[0].persName, 'ref') === this.correspondent2Id)
+                          ) {
+                            step[1] += 1;
+                          } else {
+                            results.push(j);
+                            step[1] += 1;
+                            jResults += 1;
+                          }
                         }
                       }
                       if (results.length === stopAt) break;
