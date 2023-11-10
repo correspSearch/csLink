@@ -305,54 +305,60 @@ export default {
     [1, 2].forEach((target) => {
       if (this[`correspondent${target}Id`] !== '') {
         // Calculate range
-        let start = (this.startDate === '')
+        let startSearch = (this.startDate === '')
           ? Date.parse(this.endDate)
           : Date.parse(this.startDate);
-        let end = (this.endDate === '')
+        let endSearch = (this.endDate === '')
           ? Date.parse(this.startDate)
           : Date.parse(this.endDate);
+        let start = (this.startDate === '')
+          ? this.endDate
+          : this.startDate;
+        let end = (this.endDate === '')
+          ? this.startDate
+          : this.endDate;      
         if (this.range !== '') {
-          if ((this.start === this.end
+          if ((this.startSearch === this.endSearch
               || this.startDate === ''
               || this.endDate === '')
               && this.selectionWhen !== '') {
-            // When there is only one date, equal start and end date to that date with range
+            // When there is only one date, equal startSearch and endSearch date to that date with range
             switch (this.selectionWhen) {
               case 'before':
-                start = new Date((start - (this.range * 86400000)));
-                end = new Date(end);
+                startSearch = new Date((startSearch - (this.range * 86400000)));
+                endSearch = new Date(endSearch);
                 break;
               case 'after':
-                start = new Date(start);
-                end = new Date((end + (this.range * 86400000)));
+                startSearch = new Date(startSearch);
+                endSearch = new Date((endSearch + (this.range * 86400000)));
                 break;
               case 'before-after':
               default:
-                start = new Date((start - (this.range * 86400000)));
-                end = new Date((end + (this.range * 86400000)));
+                startSearch = new Date((startSearch - (this.range * 86400000)));
+                endSearch = new Date((endSearch + (this.range * 86400000)));
                 break;
             }
           } else {
-            start = new Date((start - (this.range * 86400000)));
-            end = new Date((end + (this.range * 86400000)));
+            startSearch = new Date((startSearch - (this.range * 86400000)));
+            endSearch = new Date((endSearch + (this.range * 86400000)));
           }
           // transform to valid date format
-          start = `${start.getFullYear()}-${((start.getMonth() + 1) < 10)
-            ? `0${(start.getMonth() + 1)}`
-            : (start.getMonth() + 1)}-${(start.getDate() < 10)
-              ? `0${start.getDate()}`
-              : start.getDate()}`;
-          end = `${end.getFullYear()}-${((end.getMonth() + 1) < 10)
-            ? `0${(end.getMonth() + 1)}`
-            : (end.getMonth() + 1)}-${(end.getDate() < 10)
-              ? `0${end.getDate()}`
-              : end.getDate()}`;
+          startSearch = `${startSearch.getFullYear()}-${((startSearch.getMonth() + 1) < 10)
+            ? `0${(startSearch.getMonth() + 1)}`
+            : (startSearch.getMonth() + 1)}-${(startSearch.getDate() < 10)
+              ? `0${startSearch.getDate()}`
+              : startSearch.getDate()}`;
+          endSearch = `${endSearch.getFullYear()}-${((endSearch.getMonth() + 1) < 10)
+            ? `0${(endSearch.getMonth() + 1)}`
+            : (endSearch.getMonth() + 1)}-${(endSearch.getDate() < 10)
+              ? `0${endSearch.getDate()}`
+              : endSearch.getDate()}`;
         }
         // If there are no names given as attributes, get the preferred Name from GND, only works with related authority files
         if (this[`correspondent${target}Name`] === '') this.setNames(target);
         // NOTE: FOR IE Support use XHR instead of fetch()
-        console.info(`https://correspsearch.net/api/v2.0/tei-json.xql?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`);
-        fetch(`https://correspsearch.net/api/v2.0/tei-json.xql?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`).then((response) => {
+        console.info(`https://correspsearch.net/api/v2.0/tei-json.xql?s=${this[`correspondent${target}Id`]}&d=${startSearch}-${endSearch}`);
+        fetch(`https://correspsearch.net/api/v2.0/tei-json.xql?s=${this[`correspondent${target}Id`]}&d=${startSearch}-${endSearch}`).then((response) => {
           response.json().then((json) => {
             if (json.teiHeader.profileDesc !== null) {
               // Get a list of all involved correspondents
@@ -416,50 +422,40 @@ export default {
               if (this.selectionSpan === 'fromStart') {
                 for (let i = 0; i < json.teiHeader.profileDesc.correspDesc.length; i += 1) {
                   if (i === stopAt) break;
-                  if (!exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
-                    if (
-                        !(this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
-                        && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
-                      ) && !(
-                        this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
-                        && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
-                      ) {
-                      if (
-                        this[`correspondent${target}Id`]
-                        === this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')
-                        || this[`correspondent${target}Id`]
-                        === this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')
-                      ) {
+                  if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
+                        stopAt += 1;
+                      } else if (
+                            (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
+                          ) || (
+                            this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
+                          ) {
+                            stopAt += 1;
+                      } else {
                         this.addToResults(target, json.teiHeader.profileDesc.correspDesc[i]);
                       }
-                    }
-                  } else if (i < stopAt) stopAt += 1;
                   this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
                 }
               }
-              // Case: Selection from the end of the timespan
+              // Case: Selection from the endSearch of the timespan
               if (this.selectionSpan === 'fromEnd') {
                 stopAt = json.teiHeader.profileDesc.correspDesc.length - stopAt;
                 for (let i = (json.teiHeader.profileDesc.correspDesc.length - 1); i > -1; i -= 1) {
                   if (i < stopAt) break;
-                  if (!exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
-                    if (
-                        !(this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
-                        && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
-                      ) && !(
-                        this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
-                        && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
-                      ) {
-                      if (
-                        this[`correspondent${target}Id`]
-                        === this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')
-                        || this[`correspondent${target}Id`]
-                        === this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')
-                      ) {
+                  if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
+                        stopAt -= 1;
+                      } else if (
+                            (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
+                          ) || (
+                            this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
+                          ) {
+                            stopAt -= 1;
+                      } else {
                         this.addToResults(target, json.teiHeader.profileDesc.correspDesc[i]);
                       }
-                    }
-                  } else if (i >= stopAt) stopAt -= 1;
                   this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
                 }
               }
@@ -537,6 +533,7 @@ export default {
                     if (dateSource.from !== undefined) date = dateSource.from;
                     if (new Date(date).getTime() === new Date(m).getTime()) {
                       exactDate += 1;
+                      median = i - Math.floor(exactDate / 2);
                     } else if (new Date(date) > new Date(m)) {
                       median = (i === 0) ? 0 : (i - 1 - Math.floor(exactDate / 2));
                       break;
@@ -623,19 +620,19 @@ export default {
                   }
                   if (this.selectionSpan === 'median-before') {
                     i = median;
-                    for (i; (i >= (median - stopAt)) && (i >= 0); i -= 1) {
+                    for (i; (i > (median - stopAt)) && (i >= 0); i -= 1) {
                       if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
                         stopAt += 1;
                       } else if (
-                          !(this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
-                        ) && !(
-                          this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
-                        ) {
-                        results.push(i);
+                            (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
+                          ) || (
+                            this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
+                          ) {
+                        stopAt += 1;                        
                       } else {
-                        stopAt += 1;
+                        results.push(i);
                       }
                     }
                     results.sort();
@@ -646,15 +643,15 @@ export default {
                       if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
                         stopAt += 1;
                       } else if (
-                          !(this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
-                        ) && !(
-                          this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
-                          && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
-                        ) {
-                        results.push(i);
+                            (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent2Id
+                          ) || (
+                            this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref') === this.correspondent1Id
+                            && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
+                          ) {
+                            stopAt += 1;
                       } else {
-                        stopAt += 1;
+                        results.push(i);
                       }
                     }
                     results.sort();
