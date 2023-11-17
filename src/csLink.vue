@@ -369,7 +369,7 @@ export default {
                       name: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, '#text'),
                       url: (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('http://')
                        || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref').includes('https://'))
-                       ? `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&d=${start}-${end}`
+                       ? `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref')}&d=${startSearch}-${endSearch}`
                        : null,
                     },
                     gnd: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref'),
@@ -379,7 +379,7 @@ export default {
                       name: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, '#text'),
                       url: (this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('http://')
                        || this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref').includes('https://'))
-                       ? `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&d=${start}-${end}`
+                       ? `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref')}&d=${startSearch}-${endSearch}`
                        : null,
                     },
                     gnd: this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[1].persName, 'ref'),
@@ -420,8 +420,20 @@ export default {
               // Case: Timespan
               // Case: Selection from the start of the timespan
               if (this.selectionSpan === 'fromStart') {
+                  const spanStart = Date.parse(this.startDate);
+                  const spanEnd = Date.parse(this.endDate);
+                  // If the given timespan is greater than 2 * range, range is ignored and dates from the start of the timespan are chosen
+                  const chooseStartWithoutRange = Math.abs(spanEnd - spanStart) > this.range * 2 * 86400000;
+
                 for (let i = 0; i < json.teiHeader.profileDesc.correspDesc.length; i += 1) {
                   if (i === stopAt) break;
+                  if (json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date.length) {
+                    const dateSource = json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date[0];
+                    let date = '';
+                    if (dateSource.when !== undefined) date = dateSource.when;
+                    if (dateSource.notBefore !== undefined) date = dateSource.notBefore;
+                    if (dateSource.from !== undefined) date = dateSource.from;
+                  
                   if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
                         stopAt += 1;
                       } else if (
@@ -432,17 +444,33 @@ export default {
                             && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
                           ) {
                             stopAt += 1;
+                      } else if (Date.parse(date) < spanStart && chooseStartWithoutRange) {
+                        stopAt += 1;
                       } else {
                         this.addToResults(target, json.teiHeader.profileDesc.correspDesc[i]);
                       }
-                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
+                  }
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${startSearch}-${endSearch}`;
                 }
               }
               // Case: Selection from the endSearch of the timespan
               if (this.selectionSpan === 'fromEnd') {
                 stopAt = json.teiHeader.profileDesc.correspDesc.length - stopAt;
+
+                const spanStart = Date.parse(this.startDate);
+                const spanEnd = Date.parse(this.endDate);
+                // If the given timespan is greater than 2 * range, range is ignored and results from the end of the timespan are chosen
+                const chooseEndWithoutRange = Math.abs(spanEnd - spanStart) > this.range * 2 * 86400000;
+
                 for (let i = (json.teiHeader.profileDesc.correspDesc.length - 1); i > -1; i -= 1) {
                   if (i < stopAt) break;
+                  if (json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date.length) {
+                    const dateSource = json.teiHeader.profileDesc.correspDesc[i].correspAction[0].date[0];
+                    let date = '';
+                    if (dateSource.when !== undefined) date = dateSource.when;
+                    if (dateSource.notBefore !== undefined) date = dateSource.notBefore;
+                    if (dateSource.from !== undefined) date = dateSource.from;
+                  
                   if (exclude.includes(json.teiHeader.profileDesc.correspDesc[i].source)) {
                         stopAt -= 1;
                       } else if (
@@ -453,10 +481,13 @@ export default {
                             && this.retValDepType(json.teiHeader.profileDesc.correspDesc[i].correspAction[0].persName, 'ref') === this.correspondent2Id)
                           ) {
                             stopAt -= 1;
+                      } else if (Date.parse(date) > spanEnd && chooseEndWithoutRange) {
+                        stopAt -= 1;
                       } else {
                         this.addToResults(target, json.teiHeader.profileDesc.correspDesc[i]);
                       }
-                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
+                  }
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${startSearch}-${endSearch}`;
                 }
               }
               // Case: Random selection
@@ -513,7 +544,7 @@ export default {
                   if (sort.includes(i)) {
                     this.addToResults(target, json.teiHeader.profileDesc.correspDesc[i]);
                   }
-                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${startSearch}-${endSearch}`;
                 }
               }
               // Case: Selection from Median
@@ -661,7 +692,7 @@ export default {
                   if (!exclude.includes(json.teiHeader.profileDesc.correspDesc[e].source)) {
                     this.addToResults(target, json.teiHeader.profileDesc.correspDesc[e]);
                   }
-                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${start}-${end}`;
+                  this.links[(target - 1)] = `https://correspsearch.net/${(this.language === 'en') ? 'en' : 'de'}/${(this.language === 'en') ? 'search.html' : 'suche.html'}?s=${this[`correspondent${target}Id`]}&d=${startSearch}-${endSearch}`;
                 });
               }
             }
