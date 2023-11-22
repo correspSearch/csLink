@@ -68,7 +68,8 @@ Determines, when the range shall be added to the given date. Possible values:
 Required, when only a date is given, can be left blank with a timespan.
 
 
-    date-selection-span	
+    date-selection-span
+	
 Determines the temporal search direction when a timespan is given. Possible values:
 * `fromStart`: Results taken from the start of a timespan
 * `fromEnd`: Results taken from the end of a timespan
