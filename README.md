@@ -1,4 +1,4 @@
-# csLink - Linking edited letters with correspSearch.
+# csLink - Linking edited letters with correspSearch v2.0
 
 The widget _csLink_ provides users with the opportunity
 to not only explore a single letter of an online editon but also its interconnection
@@ -67,9 +67,7 @@ Determines, when the range shall be added to the given date. Possible values:
 * `before-after`
 Required, when only a date is given, can be left blank with a timespan.
 
-
-    date-selection-span
-	
+	date-selection-span
 Determines the temporal search direction when a timespan is given. Possible values:
 * `fromStart`: Results taken from the start of a timespan
 * `fromEnd`: Results taken from the end of a timespan
@@ -133,6 +131,8 @@ Developer: Jonas Müller-Laackman & Steven Sobkowski
 Concept & Prototype: Stefan Dumont 
 
 for the purpose of the DFG project `correspSearch - Briefeditionen vernetzen` at Berlin-Brandenburg Academy of Sciences and Humanities (BBAW).
+
+If you use this software, please cite it using the metadata in the CFF file.
 
 ## Contact
 
