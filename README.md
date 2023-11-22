@@ -58,7 +58,8 @@ is obsolete.
 
     data-range
 Range of days that are included in the search. Depending on the value of data-selection-when,
-the range is either added after, before, after and before a date, or after and before a timespan.
+the range is either added after, before, after and before a date, or after and before a timespan. 
+If the timespan provided by the edition is greater than `data-range` the timespan will be used without any addition.
 
     date-selection-when
 Determines, when the range shall be added to the given date. Possible values:
