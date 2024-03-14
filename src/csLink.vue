@@ -21,14 +21,14 @@ along with csLink.  If not, see <http://www.gnu.org/licenses/>.
   <div>
     <a href="#"
        id="exploreCorrespSearch"
-       v-bind:class="(results[0].length === 0 && results[1].length === 0) ? 'noLink' : ''"
-       v-on:mouseover="triggerPopover">{{labels.widgetTitle}} <font-awesome-icon icon="share-alt" />
+       v-bind:class="(results[0].length === 0 && results[1].length === 0) ? 'noLink' : ''">
+       {{labels.widgetTitle}} <font-awesome-icon icon="share-alt"/>
     </a>
 
     <b-popover class="cslink"
                target="exploreCorrespSearch"
       	       placement="bottom"
-               triggers="manual"
+               triggers="hover"
                ref="exploreCorrespSearchPopup"
                v-if="results[0].length !== 0 || results[1].length !== 0">
       <b-tabs>
@@ -161,16 +161,6 @@ export default {
     }
   },
   methods: {
-    // Trigger popover manually with a mouseleave event
-    triggerPopover() {
-      if (!(this.results[0].length === 0 && this.results[1].length === 0)) {
-        this.$root.$emit('bv::show::popover', 'exploreCorrespSearch');
-        document.getElementsByClassName('popover')[0].addEventListener('mouseleave', () => {
-          this.$root.$emit('bv::hide::popover', 'exploreCorrespSearch');
-        });
-      }
-    },
-
     // Transform yyyy-mm-dd to dd.mm.yyyy
     locale(date, format = 'YYYY-MM-DD') {
       switch (format) {
@@ -299,7 +289,12 @@ export default {
 
 
     // Specify cmif to exclude
-    const exclude = this.excludeEdition.replace(/ /g, '').split(',');
+    const excludeArray = this.excludeEdition.replace(/ /g, '').split(',');
+    const exclude = excludeArray.map((xmlID) => {
+      if (!xmlID.startsWith('#')) {
+        return '#' + xmlID;
+      } else return xmlID;
+    });
 
     // If there are no IDs given, don't perform a search, error will be shown on frontend
     [1, 2].forEach((target) => {
