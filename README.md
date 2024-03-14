@@ -1,4 +1,4 @@
-# csLink - Linking edited letters with correspSearch.
+# csLink - Linking edited letters with correspSearch v2.0
 
 The widget _csLink_ provides users with the opportunity
 to not only explore a single letter of an online editon but also its interconnection
@@ -44,9 +44,11 @@ to your needs.
 
 
 ## Setup the attributes
+
 _Do not change the `id` attribute for the widget to work!_
 
 ### Required
+
     data-correspondent-1-id
 Authority File URI for the first correspondent.
 
@@ -56,7 +58,8 @@ is obsolete.
 
     data-range
 Range of days that are included in the search. Depending on the value of data-selection-when,
-the range is either added after, before, after and before a date, or after and before a timespan.
+the range is either added after, before, after and before a date, or after and before a timespan. 
+If the timespan provided by the edition is greater than `data-range` the timespan will be used without any addition.
 
     date-selection-when
 Determines, when the range shall be added to the given date. Possible values:
@@ -65,7 +68,7 @@ Determines, when the range shall be added to the given date. Possible values:
 * `before-after`
 Required, when only a date is given, can be left blank with a timespan.
 
-    date-selection-span
+	date-selection-span
 Determines the temporal search direction when a timespan is given. Possible values:
 * `fromStart`: Results taken from the start of a timespan
 * `fromEnd`: Results taken from the end of a timespan
@@ -81,6 +84,7 @@ When an odd number is given, one more result is shown for the first corresponden
 Minimum is `1`.
 
 ### Optional
+
     data-correspondent-1-name
 Name of the first correspondent.
 
@@ -122,18 +126,23 @@ To listen for that event, you can for example wrap the widget in a `<div id="wra
     });
 ```
 
-## Copyright
-Developed by
-Jonas Müller-Laackman
-jonas.mueller-laackman@bbaw.de
+## Credits
 
-for the purpose of the DFG project
-`correspSearch - Briefeditionen vernetzen`
-at Berlin-Brandenburg Academy of Sciences and Humanities (BBAW).
+Developer: Jonas Müller-Laackman & Steven Sobkowski
+Concept & Prototype: Stefan Dumont 
+
+for the purpose of the DFG project `correspSearch - Briefeditionen vernetzen` at Berlin-Brandenburg Academy of Sciences and Humanities (BBAW).
+
+If you use this software, please cite it using the metadata in the CFF file.
+
+## Contact
+
+correspSearch@bbaw.de
+https://correspSearch.net 
 
 ## License
 
-Copyright (C) 2018 Berlin-Brandenburg Academy of Sciences and Humanities.
+Copyright (C) 2018-2023 Berlin-Brandenburg Academy of Sciences and Humanities.
 
 csLink is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
